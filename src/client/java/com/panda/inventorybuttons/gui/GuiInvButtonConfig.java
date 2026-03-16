@@ -244,23 +244,19 @@ public class GuiInvButtonConfig extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean doubled) {
-        double mouseX = click.x();
-        double mouseY = click.y();
-        int button = click.button();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             int tabW = boxW / 2;
             if (mouseY >= boxY && mouseY < boxY + 16) {
                 if (mouseX >= boxX && mouseX < boxX + tabW) {
                     currentTab = Tab.GENERAL;
                     if(profileNameField != null) profileNameField.setFocused(false);
-                    if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     return true;
                 }
                 if (mouseX >= boxX + tabW && mouseX < boxX + boxW) {
                     currentTab = Tab.PROFILES;
-                    if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     return true;
                 }
             }
@@ -269,18 +265,18 @@ public class GuiInvButtonConfig extends Screen {
                 for (ConfigToggle btn : generalButtons) {
                     if (mouseX >= btn.btnX && mouseX < btn.btnX + btn.btnW && mouseY >= btn.y && mouseY < btn.y + btn.btnH) {
                         btn.setter.accept(!btn.getter.get());
-                        if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                         return true;
                     }
                 }
             } else {
-                boolean fieldClicked = profileNameField.mouseClicked(click, doubled);
+                boolean fieldClicked = profileNameField.mouseClicked(mouseX, mouseY, button);
                 profileNameField.setFocused(fieldClicked);
                 if (fieldClicked) return true;
 
                 if (mouseX >= profileSaveBtn.x && mouseX < profileSaveBtn.x + profileSaveBtn.w && mouseY >= profileSaveBtn.y && mouseY < profileSaveBtn.y + profileSaveBtn.h) {
                     profileSaveBtn.action.run();
-                    if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     return true;
                 }
 
@@ -294,13 +290,13 @@ public class GuiInvButtonConfig extends Screen {
 
                         if (mouseX >= btn.x && mouseX < btn.x + btn.w && mouseY >= currentY && mouseY < currentY + btn.h) {
                             btn.action.run();
-                            if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                            if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             return true;
                         }
 
                         if (mouseX >= delBtn.x && mouseX < delBtn.x + delBtn.w && mouseY >= currentY && mouseY < currentY + delBtn.h) {
                             delBtn.action.run();
-                            if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                            if(this.client != null) this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             return true;
                         }
                         currentY += btn.h + 2;
@@ -308,7 +304,7 @@ public class GuiInvButtonConfig extends Screen {
                 }
             }
         }
-        return super.mouseClicked(click, doubled);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -329,23 +325,23 @@ public class GuiInvButtonConfig extends Screen {
     }
 
     @Override
-    public boolean keyPressed(net.minecraft.client.input.KeyInput input) {
-        if (input.key() == GLFW.GLFW_KEY_ESCAPE && !profileNameField.isFocused()) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE && !profileNameField.isFocused()) {
             this.close();
             return true;
         }
         if (currentTab == Tab.PROFILES && profileNameField.isFocused()) {
-            if (profileNameField.keyPressed(input)) return true;
+            if (profileNameField.keyPressed(keyCode, scanCode, modifiers)) return true;
         }
-        return super.keyPressed(input);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public boolean charTyped(net.minecraft.client.input.CharInput input) {
+    public boolean charTyped(char chr, int modifiers) {
         if (currentTab == Tab.PROFILES && profileNameField.isFocused()) {
-            if (profileNameField.charTyped(input)) return true;
+            if (profileNameField.charTyped(chr, modifiers)) return true;
         }
-        return super.charTyped(input);
+        return super.charTyped(chr, modifiers);
     }
 
     @Override

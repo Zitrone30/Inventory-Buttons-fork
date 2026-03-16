@@ -660,11 +660,7 @@ public class GuiInvButtonEditor extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean doubled) {
-        double mouseX = click.x();
-        double mouseY = click.y();
-        int button = click.button();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isSavePanelOpen) {
             int panelW = 200;
             int panelH = 100;
@@ -680,7 +676,7 @@ public class GuiInvButtonEditor extends Screen {
                 return true;
             }
 
-            boolean fieldClicked = saveProfileField.mouseClicked(click, doubled);
+            boolean fieldClicked = saveProfileField.mouseClicked(mouseX, mouseY, button);
             saveProfileField.setFocused(fieldClicked);
             if(fieldClicked) return true;
 
@@ -791,9 +787,9 @@ public class GuiInvButtonEditor extends Screen {
                 iconTextField.setFocused(inIcon);
                 addSkullField.setFocused(inSkull);
 
-                if (inCmd) commandTextField.mouseClicked(click, doubled);
-                if (inIcon) iconTextField.mouseClicked(click, doubled);
-                if (inSkull) addSkullField.mouseClicked(click, doubled);
+                if (inCmd) commandTextField.mouseClicked(mouseX, mouseY, button);
+                if (inIcon) iconTextField.mouseClicked(mouseX, mouseY, button);
+                if (inSkull) addSkullField.mouseClicked(mouseX, mouseY, button);
 
                 if (mouseY >= editorTop + 52 && mouseY <= editorTop + 52 + 18) {
                     for(int i=0; i<5; i++) {
@@ -854,7 +850,7 @@ public class GuiInvButtonEditor extends Screen {
                         commandTextField.setFocused(true);
                         iconTextField.setFocused(false);
                         addSkullField.setFocused(false);
-                        if (btn.itemId.startsWith("skull:")) {
+                        if (btn.itemId != null && btn.itemId.startsWith("skull:")) {
                             addSkullField.setText(btn.itemId);
                         } else {
                             addSkullField.setText("");
@@ -892,7 +888,7 @@ public class GuiInvButtonEditor extends Screen {
         isDragging = false;
         isEditorOpen = false;
         isInfoPanelOpen = false;
-        return super.mouseClicked(click, doubled);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void handleListClick(double mouseX, double mouseY) {
@@ -922,9 +918,9 @@ public class GuiInvButtonEditor extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(net.minecraft.client.gui.Click click) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         isDragging = false;
-        return super.mouseReleased(click);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     private boolean isOverlapping(int x, int y) {
@@ -938,10 +934,7 @@ public class GuiInvButtonEditor extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(net.minecraft.client.gui.Click click, double deltaX, double deltaY) {
-        double mouseX = click.x();
-        double mouseY = click.y();
-
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (isDragging && editingButton != null) {
             int newScreenX = (int)mouseX - dragOffsetX;
             int newScreenY = (int)mouseY - dragOffsetY;
@@ -1037,10 +1030,9 @@ public class GuiInvButtonEditor extends Screen {
         }
 
         if (editingButton != null && isEditorOpen && mouseX >= editorLeft && mouseX <= editorLeft + editorWidth) {
-            int scroll = (int)(-deltaY * 10);
             return true;
         }
-        return super.mouseDragged(click, deltaX, deltaY);
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
@@ -1061,22 +1053,22 @@ public class GuiInvButtonEditor extends Screen {
     }
 
     @Override
-    public boolean keyPressed(net.minecraft.client.input.KeyInput input) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         boolean inputsFocused = (isEditorOpen && (commandTextField.isFocused() || iconTextField.isFocused() || addSkullField.isFocused()))
                 || (isSavePanelOpen && saveProfileField.isFocused());
 
-        if (input.key() == GLFW.GLFW_KEY_S && !inputsFocused) {
+        if (keyCode == GLFW.GLFW_KEY_S && !inputsFocused) {
             this.localGridSnap = !this.localGridSnap;
             return true;
         }
 
         if (isSavePanelOpen) {
-            if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 isSavePanelOpen = false;
                 saveProfileField.setFocused(false);
                 return true;
             }
-            if (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER) {
+            if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
                 String name = saveProfileField.getText().trim();
                 if (!name.isEmpty()) {
                     InventoryButtons.saveProfile(name);
@@ -1087,26 +1079,26 @@ public class GuiInvButtonEditor extends Screen {
                 }
                 return true;
             }
-            if (saveProfileField.keyPressed(input)) return true;
-            return super.keyPressed(input);
+            if (saveProfileField.keyPressed(keyCode, scanCode, modifiers)) return true;
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
         if (editingButton != null) {
             if (isEditorOpen) {
                 if (commandTextField.isFocused()) {
-                    if (input.key() == GLFW.GLFW_KEY_BACKSPACE) {
+                    if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
                         String txt = commandTextField.getText();
                         int cursor = commandTextField.getCursor();
                         if (txt.equals("/") || (cursor <= 1 && commandTextField.getSelectedText().isEmpty())) {
                             return true;
                         }
                     }
-                    return commandTextField.keyPressed(input);
+                    return commandTextField.keyPressed(keyCode, scanCode, modifiers);
                 }
-                if (iconTextField.isFocused()) return iconTextField.keyPressed(input);
-                if (addSkullField.isFocused()) return addSkullField.keyPressed(input);
+                if (iconTextField.isFocused()) return iconTextField.keyPressed(keyCode, scanCode, modifiers);
+                if (addSkullField.isFocused()) return addSkullField.keyPressed(keyCode, scanCode, modifiers);
             }
-            if (input.key() == GLFW.GLFW_KEY_DELETE || input.key() == GLFW.GLFW_KEY_BACKSPACE) {
+            if (keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE) {
                 if (!isEditorOpen || (!commandTextField.isFocused() && !iconTextField.isFocused() && !addSkullField.isFocused())) {
                     InventoryButtons.instance.buttons.remove(editingButton);
                     editingButton = null;
@@ -1117,28 +1109,28 @@ public class GuiInvButtonEditor extends Screen {
                 }
             }
         }
-        return super.keyPressed(input);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public boolean charTyped(net.minecraft.client.input.CharInput input) {
+    public boolean charTyped(char chr, int modifiers) {
         if (isSavePanelOpen) {
-            if (saveProfileField.charTyped(input)) return true;
-            return super.charTyped(input);
+            if (saveProfileField.charTyped(chr, modifiers)) return true;
+            return super.charTyped(chr, modifiers);
         }
         if (editingButton != null && isEditorOpen) {
-            if (commandTextField.isFocused() && commandTextField.charTyped(input)) {
+            if (commandTextField.isFocused() && commandTextField.charTyped(chr, modifiers)) {
                 return true;
             }
-            if (iconTextField.isFocused() && iconTextField.charTyped(input)) {
+            if (iconTextField.isFocused() && iconTextField.charTyped(chr, modifiers)) {
                 search(iconTextField.getText());
                 return true;
             }
-            if (addSkullField.isFocused() && addSkullField.charTyped(input)) {
+            if (addSkullField.isFocused() && addSkullField.charTyped(chr, modifiers)) {
                 return true;
             }
         }
-        return super.charTyped(input);
+        return super.charTyped(chr, modifiers);
     }
 
     @Override

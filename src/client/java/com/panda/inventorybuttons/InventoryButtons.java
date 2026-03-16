@@ -1,7 +1,5 @@
 package com.panda.inventorybuttons;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -98,13 +96,13 @@ public class InventoryButtons {
 				String base64 = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
 				UUID uuid = UUID.nameUUIDFromBytes(textureId.getBytes(StandardCharsets.UTF_8));
 
-				Multimap<String, Property> multimap = ArrayListMultimap.create();
-				multimap.put("textures", new Property("textures", base64));
-				PropertyMap properties = new PropertyMap(multimap);
+				PropertyMap properties = new PropertyMap();
+				properties.put("textures", new Property("textures", base64));
 
-				GameProfile profile = new GameProfile(uuid, "Skull", properties);
+				GameProfile profile = new GameProfile(uuid, "Skull");
+				profile.getProperties().putAll(properties);
 
-				ProfileComponent profileComponent = ProfileComponent.ofStatic(profile);
+				ProfileComponent profileComponent = new ProfileComponent(profile);
 				head.set(DataComponentTypes.PROFILE, profileComponent);
 
 				return head;

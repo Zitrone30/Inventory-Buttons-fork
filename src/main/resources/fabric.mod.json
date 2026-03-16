@@ -3,15 +3,15 @@
 	"id": "inventorybuttons",
 	"version": "${version}",
 	"name": "inventorybuttons",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Adds customizable inventory action buttons inspired by NotEnoughUpdates.",
 	"authors": [
-		"Me!"
+		"afranz29"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/afranz29/Inventory-Buttons",
+		"sources": "https://github.com/afranz29/Inventory-Buttons"
 	},
-	"license": "CC0-1.0",
+	"license": "LGPL-3.0-only",
 	"icon": "assets/inventorybuttons/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -27,8 +27,8 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.21.11",
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21.8",
 		"java": ">=21",
 		"fabric-api": "*"
 	}
