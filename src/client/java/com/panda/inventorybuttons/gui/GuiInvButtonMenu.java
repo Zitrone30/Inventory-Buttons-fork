@@ -79,25 +79,21 @@ public class GuiInvButtonMenu extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean doubled) {
-        double mouseX = click.x();
-        double mouseY = click.y();
-        int button = click.button();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             for (MenuButton btn : menuButtons) {
                 if (mouseX >= btn.x && mouseX < btn.x + btn.width &&
                         mouseY >= btn.y && mouseY < btn.y + btn.height) {
 
                     if (this.client != null) {
-                        this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     }
                     btn.action.run();
                     return true;
                 }
             }
         }
-        return super.mouseClicked(click, doubled);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private record MenuButton(int x, int y, int width, int height, String label, Runnable action) {}
