@@ -2,7 +2,7 @@
 
 A Fabric mod for Minecraft that brings the popular "Inventory Buttons" feature from [NotEnoughUpdates (NEU)](https://github.com/NotEnoughUpdates/NotEnoughUpdates) to modern versions of Minecraft.
 
-This mod is available for **1.21.11** and **1.21.5**
+This mod is available for **1.21.11** and **1.21.8, 1.21.5 is Deprecated**
 
 ## Features
 
