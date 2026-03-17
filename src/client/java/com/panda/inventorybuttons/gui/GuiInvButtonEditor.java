@@ -198,17 +198,7 @@ public class GuiInvButtonEditor extends Screen {
         this.commandTextField.setMaxLength(256);
         this.commandTextField.setChangedListener(s -> {
             if (editingButton != null) {
-                String text = s;
-                if (text.isEmpty()) {
-                    text = "/";
-                    commandTextField.setText(text);
-                    commandTextField.setCursor(1, false);
-                } else if (!text.startsWith("/")) {
-                    text = "/" + text.replace("/", "");
-                    commandTextField.setText(text);
-                    commandTextField.setCursor(text.length(), false);
-                }
-                editingButton.command = text;
+                editingButton.command = s;
             }
         });
 
@@ -842,9 +832,6 @@ public class GuiInvButtonEditor extends Screen {
                 } else {
                     if (!isEditorOpen) {
                         isEditorOpen = true;
-                        if (!btn.command.startsWith("/")) {
-                            btn.command = "/" + btn.command;
-                        }
                         commandTextField.setText(btn.command);
                         commandTextField.setCursor(btn.command.length(), false);
                         commandTextField.setFocused(true);
@@ -869,7 +856,7 @@ public class GuiInvButtonEditor extends Screen {
         if (button == 1) {
             int relX = (int)mouseX - guiLeft;
             int relY = (int)mouseY - guiTop;
-            InventoryButtons.CustomButtonData newBtn = new InventoryButtons.CustomButtonData(relX, relY, "/cmd", "minecraft:stone");
+            InventoryButtons.CustomButtonData newBtn = new InventoryButtons.CustomButtonData(relX, relY, "cmd", "minecraft:stone");
             InventoryButtons.instance.buttons.add(newBtn);
             editingButton = newBtn;
             isEditorOpen = true;
@@ -1086,13 +1073,6 @@ public class GuiInvButtonEditor extends Screen {
         if (editingButton != null) {
             if (isEditorOpen) {
                 if (commandTextField.isFocused()) {
-                    if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-                        String txt = commandTextField.getText();
-                        int cursor = commandTextField.getCursor();
-                        if (txt.equals("/") || (cursor <= 1 && commandTextField.getSelectedText().isEmpty())) {
-                            return true;
-                        }
-                    }
                     return commandTextField.keyPressed(keyCode, scanCode, modifiers);
                 }
                 if (iconTextField.isFocused()) return iconTextField.keyPressed(keyCode, scanCode, modifiers);
