@@ -174,9 +174,14 @@ public abstract class MixinHandledScreen extends Screen {
 
                 if (mouseX >= btnX && mouseX <= btnX + 18 && mouseY >= btnY && mouseY <= btnY + 18) {
                     if (this.client != null && this.client.player != null) {
-                        String cmd = btn.command;
-                        if (cmd.startsWith("/")) cmd = cmd.substring(1);
-                        this.client.player.networkHandler.sendChatCommand(cmd);
+                        String cmd = btn.command == null ? "" : btn.command.trim();
+                        if (!cmd.isEmpty()) {
+                            if (cmd.startsWith("/")) {
+                                this.client.player.networkHandler.sendChatCommand(cmd.substring(1));
+                            } else {
+                                this.client.player.networkHandler.sendChatMessage(cmd);
+                            }
+                        }
                         this.client.getSoundManager().play(net.minecraft.client.sound.PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
                     }
 
