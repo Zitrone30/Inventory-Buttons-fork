@@ -6,6 +6,10 @@ import com.panda.inventorybuttons.util.HypixelItemManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
+
+import java.util.Locale;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
@@ -51,6 +55,8 @@ public class InventoryButtonsClient implements ClientModInitializer {
 
 		// Ticker to handle opening the screens safely on the client thread
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			InventoryButtons.setCurrentServer(getCurrentServerKey(client));
+
 			if (openMenuNextTick) {
 				openMenuNextTick = false;
 				client.setScreen(new GuiInvButtonMenu());
@@ -62,5 +68,23 @@ public class InventoryButtonsClient implements ClientModInitializer {
 		});
 
 		InventoryButtons.LOGGER.info("InventoryButtons loaded successfully!");
+	}
+
+	private static String getCurrentServerKey(MinecraftClient client) {
+		if (client.isInSingleplayer()) {
+			return "singleplayer";
+		}
+
+		ServerInfo server = client.getCurrentServerEntry();
+		if (server == null || server.address == null) {
+			return null;
+		}
+
+		String normalizedAddress = server.address.trim().toLowerCase(Locale.ROOT);
+		if (normalizedAddress.isEmpty()) {
+			return null;
+		}
+
+		return "multiplayer:" + normalizedAddress;
 	}
 }
