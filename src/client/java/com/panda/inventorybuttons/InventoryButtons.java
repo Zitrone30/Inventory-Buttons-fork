@@ -43,6 +43,10 @@ public class InventoryButtons {
 	public boolean hideInCreative = false;
 
 	public List<CustomButtonData> buttons = new ArrayList<>();
+	public Map<String, List<CustomButtonData>> serverButtons = new LinkedHashMap<>();
+	public boolean legacyButtonsMigrated = false;
+
+	private static String activeServerKey = null;
 
 	public static final Map<String, Identifier> CUSTOM_TEXTURES = new LinkedHashMap<>();
 	static {
@@ -118,16 +122,30 @@ public class InventoryButtons {
 	public static void load() {
 		if (Files.exists(CONFIG_PATH)) {
 			try (Reader reader = Files.newBufferedReader(CONFIG_PATH)) {
-				instance = GSON.fromJson(reader, InventoryButtons.class);
+				InventoryButtons loaded = GSON.fromJson(reader, InventoryButtons.class);
+				if (loaded != null) {
+					instance = loaded;
+				}
 			} catch (IOException e) {
 				LOGGER.error("Failed to load config", e);
 			}
 		} else { save(); }
+
+		if (instance.buttons == null) {
+			instance.buttons = new ArrayList<>();
+		}
+		if (instance.serverButtons == null) {
+			instance.serverButtons = new LinkedHashMap<>();
+		}
+		if (!instance.serverButtons.isEmpty()) {
+			instance.legacyButtonsMigrated = true;
+		}
 	}
 
 	public static void save() {
 		try {
 			if (!Files.exists(BASE_DIR)) Files.createDirectories(BASE_DIR);
+			storeActiveButtons();
 			try (Writer writer = Files.newBufferedWriter(CONFIG_PATH)) {
 				GSON.toJson(instance, writer);
 			}
@@ -164,6 +182,53 @@ public class InventoryButtons {
 		} catch (IOException e) {
 			LOGGER.error("Failed to load profile: " + name, e);
 		}
+	}
+
+	public static void setCurrentServer(String serverKey) {
+		if (Objects.equals(activeServerKey, serverKey)) {
+			return;
+		}
+
+		storeActiveButtons();
+		activeServerKey = serverKey;
+
+		if (serverKey == null || serverKey.isBlank()) {
+			instance.buttons = new ArrayList<>();
+			save();
+			return;
+		}
+
+		List<CustomButtonData> storedButtons = instance.serverButtons.get(serverKey);
+		if (storedButtons != null) {
+			instance.buttons = new ArrayList<>(storedButtons);
+			return;
+		}
+
+		if (!instance.legacyButtonsMigrated && instance.serverButtons.isEmpty() && !instance.buttons.isEmpty()) {
+			instance.serverButtons.put(serverKey, new ArrayList<>(instance.buttons));
+			instance.legacyButtonsMigrated = true;
+			save();
+			return;
+		}
+
+		instance.buttons = new ArrayList<>();
+	}
+
+	private static void storeActiveButtons() {
+		if (activeServerKey == null || activeServerKey.isBlank()) {
+			return;
+		}
+
+		if (instance.buttons == null) {
+			instance.buttons = new ArrayList<>();
+		}
+
+		if (instance.buttons.isEmpty()) {
+			instance.serverButtons.remove(activeServerKey);
+			return;
+		}
+
+		instance.serverButtons.put(activeServerKey, new ArrayList<>(instance.buttons));
 	}
 
 	public static void deleteProfile(String name) {
