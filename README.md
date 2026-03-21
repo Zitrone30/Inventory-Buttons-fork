@@ -4,6 +4,16 @@ A Fabric mod for Minecraft that brings the popular "Inventory Buttons" feature f
 
 This mod is available for **1.21.11** and **1.21.8, 1.21.5 is Deprecated**
 
+## Building From Source
+
+Use the Gradle wrapper that ships with the repository:
+
+```bash
+./gradlew build
+```
+
+Using a system-installed `gradle` can fail if it is older than the version required by the current Fabric Loom plugin. This project currently expects Gradle 9.2+ through the wrapper.
+
 ## Features
 
 * **Quick Inventory Access:** Add customizable buttons to your inventory and chest GUIs for quick actions.
