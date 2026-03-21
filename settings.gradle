@@ -8,3 +8,13 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
+
+import org.gradle.util.GradleVersion
+
+def minimumGradleVersion = GradleVersion.version("9.2")
+if (GradleVersion.current() < minimumGradleVersion) {
+	throw new GradleException(
+		"This project requires Gradle ${minimumGradleVersion.version} or newer. " +
+		"Use the included wrapper with ./gradlew build."
+	)
+}
