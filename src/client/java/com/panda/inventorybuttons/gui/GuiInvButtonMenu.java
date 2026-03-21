@@ -55,14 +55,14 @@ public class GuiInvButtonMenu extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(this.width / 2.0f, 60.0f);
+        context.getMatrices().push();
+        context.getMatrices().translate(this.width / 2.0f, 60.0f, 0.0f);
         float scale = 2.0f;
-        context.getMatrices().scale(scale, scale);
+        context.getMatrices().scale(scale, scale, 1.0f);
 
         int titleWidth = this.textRenderer.getWidth(this.title);
         context.drawText(this.textRenderer, this.title, -titleWidth / 2, -this.textRenderer.fontHeight / 2, 0xFFFFFFFF, true);
-        context.getMatrices().popMatrix();
+        context.getMatrices().pop();
 
         for (MenuButton btn : menuButtons) {
             boolean isHovered = mouseX >= btn.x && mouseX < btn.x + btn.width &&
@@ -79,25 +79,21 @@ public class GuiInvButtonMenu extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean doubled) {
-        double mouseX = click.x();
-        double mouseY = click.y();
-        int button = click.button();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             for (MenuButton btn : menuButtons) {
                 if (mouseX >= btn.x && mouseX < btn.x + btn.width &&
                         mouseY >= btn.y && mouseY < btn.y + btn.height) {
 
                     if (this.client != null) {
-                        this.client.getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
                     }
                     btn.action.run();
                     return true;
                 }
             }
         }
-        return super.mouseClicked(click, doubled);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private record MenuButton(int x, int y, int width, int height, String label, Runnable action) {}

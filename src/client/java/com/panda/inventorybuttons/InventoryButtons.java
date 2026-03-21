@@ -1,13 +1,10 @@
 package com.panda.inventorybuttons;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
@@ -102,13 +99,10 @@ public class InventoryButtons {
 				String base64 = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
 				UUID uuid = UUID.nameUUIDFromBytes(textureId.getBytes(StandardCharsets.UTF_8));
 
-				Multimap<String, Property> multimap = ArrayListMultimap.create();
-				multimap.put("textures", new Property("textures", base64));
-				PropertyMap properties = new PropertyMap(multimap);
+				GameProfile profile = new GameProfile(uuid, "Skull");
+				profile.getProperties().put("textures", new Property("textures", base64));
 
-				GameProfile profile = new GameProfile(uuid, "Skull", properties);
-
-				ProfileComponent profileComponent = ProfileComponent.ofStatic(profile);
+				ProfileComponent profileComponent = new ProfileComponent(profile);
 				head.set(DataComponentTypes.PROFILE, profileComponent);
 
 				return head;
