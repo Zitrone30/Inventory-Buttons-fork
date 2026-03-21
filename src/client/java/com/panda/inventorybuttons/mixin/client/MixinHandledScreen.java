@@ -1,7 +1,6 @@
 package com.panda.inventorybuttons.mixin.client;
 
 import com.panda.inventorybuttons.InventoryButtons;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -84,7 +83,7 @@ public abstract class MixinHandledScreen extends Screen {
             if (btn.anchorRight) btnX += xSize;
             if (btn.anchorBottom) btnY += ySize;
 
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, BUTTONS_TEXTURE, btnX, btnY, (float)(btn.backgroundIndex * 18), 18.0f, 18, 18, 90, 36);
+            context.drawTexture(BUTTONS_TEXTURE, btnX, btnY, (float)(btn.backgroundIndex * 18), 18.0f, 18, 18, 90, 36);
 
             Identifier customTex = null;
             if (btn.itemId != null) {
@@ -97,7 +96,7 @@ public abstract class MixinHandledScreen extends Screen {
             }
 
             if (customTex != null) {
-                context.drawTexture(RenderPipelines.GUI_TEXTURED, customTex, btnX + 1, btnY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
+                context.drawTexture(customTex, btnX + 1, btnY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
             } else {
                 ItemStack stack = btn.getItemStack();
                 if (!stack.isEmpty()) context.drawItem(stack, btnX + 1, btnY + 1);
@@ -127,12 +126,8 @@ public abstract class MixinHandledScreen extends Screen {
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void onMouseClicked(net.minecraft.client.gui.Click click, boolean doubled, CallbackInfoReturnable<Boolean> cir) {
+    private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (!InventoryButtons.instance.enabled) return;
-
-        double mouseX = click.x();
-        double mouseY = click.y();
-        int button = click.button();
 
         if (InventoryButtons.instance.hideInCreative && this.client != null && this.client.interactionManager != null && this.client.interactionManager.getCurrentGameMode().isCreative()) {
             return;
@@ -182,7 +177,7 @@ public abstract class MixinHandledScreen extends Screen {
                                 this.client.player.networkHandler.sendChatMessage(cmd);
                             }
                         }
-                        this.client.getSoundManager().play(net.minecraft.client.sound.PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
+                        this.client.getSoundManager().play(net.minecraft.client.sound.PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
                     }
 
                     cir.setReturnValue(true);
